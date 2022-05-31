@@ -1,41 +1,37 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import s from './Modal.module.css';
 import PropTypes from 'prop-types';
 
-export default class Modal extends Component {
-  static defaultProps = {
-    handleToggleModal: PropTypes.func.isRequired,
-    modalImg: PropTypes.string.isRequired,
-  };
-
-  onCloseModalByEsc = event => {
+export default function Modal({ handleToggleModal, modalImg }) {
+  const onCloseModalByEsc = event => {
     if (event.keyCode === 27) {
-      this.props.handleToggleModal('');
+      handleToggleModal('');
     }
   };
-  componentDidMount() {
-    window.addEventListener('keydown', this.onCloseModalByEsc);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onCloseModalByEsc);
-  }
-  render() {
-    const { handleToggleModal, modalImg } = this.props;
-    return (
-      <div>
-        <div
-          className={s.Overlay}
-          onClick={event => {
-            if (event.target === event.currentTarget) {
-              handleToggleModal('');
-            }
-          }}
-        >
-          <div className={s.Modal}>
-            <img src={modalImg} alt="" />
-          </div>
-        </div>
+
+  useEffect(() => {
+    window.addEventListener('keydown', onCloseModalByEsc);
+    return () => {
+      window.removeEventListener('keydown', onCloseModalByEsc);
+    };
+  });
+
+  return (
+    <div
+      className={s.Overlay}
+      onClick={event => {
+        if (event.target === event.currentTarget) {
+          handleToggleModal('');
+        }
+      }}
+    >
+      <div className={s.Modal}>
+        <img src={modalImg} alt="" />
       </div>
-    );
-  }
+    </div>
+  );
 }
+Modal.propTypes = {
+  handleToggleModal: PropTypes.func.isRequired,
+  modalImg: PropTypes.string.isRequired,
+};
