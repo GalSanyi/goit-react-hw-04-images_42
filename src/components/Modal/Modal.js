@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import s from './Modal.module.css';
 import PropTypes from 'prop-types';
 
-export default function Modal({ handleToggleModal, modalImg }) {
+export default function Modal({ handleToggleModal, modalImg, onClose }) {
   const onCloseModalByEsc = event => {
     if (event.keyCode === 27) {
-      handleToggleModal('');
+      onClose();
     }
   };
 
@@ -21,12 +21,12 @@ export default function Modal({ handleToggleModal, modalImg }) {
       className={s.Overlay}
       onClick={event => {
         if (event.target === event.currentTarget) {
-          handleToggleModal('');
+          onClose();
         }
       }}
     >
       <div className={s.Modal}>
-        <img src={modalImg} alt="" />
+        <img src={modalImg} alt="pictures" width="800" height="700" />
       </div>
     </div>
   );

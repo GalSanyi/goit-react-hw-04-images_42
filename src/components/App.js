@@ -8,65 +8,73 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../components/App.css';
 import Loader from './Loader/Loader';
 
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default class App extends Component {
-  state = {
-    query: '',
-    page: 1,
-    isPending: false,
-    isModalOpen: false,
-    images: [],
-    modalImg: '',
-  };
+export default function App() {
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [isPending, setIsPending] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [images, setImage] = useState([]);
+  const [modalImg, setModalImg] = useState('');
 
-  formSubmitHandler = query => {
-    console.log('query', query);
-    this.setState({ query, isPending: true, images: [], page: 1 });
-  };
-
-  componentDidUpdate(prevProps, prevState) {
-    const { query, page } = this.state;
-    if (prevState.query !== query || prevState.page !== page) {
-      fetchImages(query, page).then(img => {
-        if (query.length === 0) {
-          toast.error('image not found');
-        }
-
-        this.setState(prev => ({
-          images: page > 1 ? [...prev.images, ...img] : img,
-          isPending: false,
-        }));
-      });
+  const formSubmitHandler = query => {
+    if (query.trim() === '') {
+      return toast.error('image not found', 2000);
     }
-  }
-
-  handleToggleModal = image => {
-    this.setState(prev => ({
+    setQuery(query);
+    setIsPending(true);
+    setImage([]);
+    setPage(1);
+  };
+  const closeModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+  const handleToggleModal = image => {
+    setIsModalOpen(prev => ({
       isModalOpen: !prev.isModalOpen,
       modalImg: image,
     }));
+    setModalImg(image);
   };
-  handleLoadMore() {
-    this.setState(prev => ({ page: prev.page + 1, isPending: true }));
-  }
-  render() {
-    const { images, isModalOpen, modalImg, isPending } = this.state;
-    const { handleToggleModal, handleLoadMore } = this;
-    return (
-      <div>
-        <Searchbar onSubmit={this.formSubmitHandler} />
-        <ImageGallery handleToggleModal={handleToggleModal} images={images} />
-        {images.length >= 12 && (
-          <Button handleLoadMore={handleLoadMore.bind(this)} />
-        )}
 
-        {isPending && <Loader />}
-        {isModalOpen && (
-          <Modal modalImg={modalImg} handleToggleModal={handleToggleModal} />
-        )}
-        <ToastContainer />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!query || !page) {
+      return;
+    }
+
+    fetchImages(query, page).then(img => {
+      if (img.length === 0) {
+        toast.error('no pictures');
+      }
+
+      setIsPending(false);
+      setImage(prev => [...prev, ...img]);
+    });
+  }, [page, query]);
+
+  const handleLoadMore = () => {
+    setPage(prev => prev + 1);
+    setIsPending(true);
+  };
+
+  return (
+    <div>
+      <Searchbar onSubmit={formSubmitHandler} />
+      <ImageGallery handleToggleModal={handleToggleModal} images={images} />
+      {images.length >= 12 && (
+        <Button handleLoadMore={handleLoadMore.bind(this)} />
+      )}
+
+      {isPending && <Loader />}
+      {isModalOpen && (
+        <Modal
+          modalImg={modalImg}
+          handleToggleModal={handleToggleModal}
+          onClose={closeModal}
+        />
+      )}
+      <ToastContainer />
+    </div>
+  );
 }

@@ -8,7 +8,7 @@ export default function ImageGalleryItem({ img, modalImg, handleToggleModal }) {
       onClick={() => handleToggleModal(modalImg)}
       className={s.ImageGalleryItem}
     >
-      <img className={s.ImageGalleryItemImage} src={img} alt="" />
+      <img className={s.ImageGalleryItemImage} src={img} alt="pictures" />
     </li>
   );
 }
