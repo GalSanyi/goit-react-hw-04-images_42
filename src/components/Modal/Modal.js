@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import s from './Modal.module.css';
 import PropTypes from 'prop-types';
 
-export default function Modal({ handleToggleModal, modalImg, onClose }) {
+export default function Modal({ modalImg, onClose }) {
   const onCloseModalByEsc = event => {
     if (event.keyCode === 27) {
       onClose();

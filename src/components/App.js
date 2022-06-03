@@ -67,13 +67,7 @@ export default function App() {
       )}
 
       {isPending && <Loader />}
-      {isModalOpen && (
-        <Modal
-          modalImg={modalImg}
-          handleToggleModal={handleToggleModal}
-          onClose={closeModal}
-        />
-      )}
+      {isModalOpen && <Modal modalImg={modalImg} onClose={closeModal} />}
       <ToastContainer />
     </div>
   );
